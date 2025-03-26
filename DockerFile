@@ -1,18 +1,26 @@
-# Utilisation de Python 3.11
-FROM python:3.11
+# Utiliser une image de base Python
+FROM python:3.11-slim
 
-# Définition du dossier de travail
+# Installer les outils de compilation, Tkinter et Nmap
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libc-dev \
+    tk-dev \
+    tcl-dev \
+    nmap \
+    && rm -rf /var/lib/apt/lists/*
+
+# Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
-# Copier les fichiers nécessaires
+# Copier le fichier requirements.txt dans le conteneur
 COPY requirements.txt .
+
+# Installer les dépendances Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier le reste de l'application
+# Copier tout le code de l'application dans le conteneur
 COPY . .
 
-# Exposer le port Flask
-EXPOSE 5000
-
-# Lancer l'application
-CMD ["python", "app.py"]
+# Commande à exécuter lorsque le conteneur démarre
+CMD ["python", "main.py"]

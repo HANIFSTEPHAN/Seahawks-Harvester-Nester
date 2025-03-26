@@ -28,7 +28,7 @@ class SeahawksHarvesterApp(ctk.CTk):
         self.network_scanner = NetworkScanner()
         self.wan_latency = WanLatency()
         self.update_checker = UpdateChecker(self.version)
-        self.nester_client = NesterClient("http://192.168.11.135:5000")  # URL du serveur Nester
+        self.nester_client = NesterClient("http://172.20.10.2:5000")  # URL du serveur Nester
 
         # Construction de l'interface
         self._build_ui()
@@ -231,18 +231,19 @@ class SeahawksHarvesterApp(ctk.CTk):
         else:
             messagebox.showinfo("Update Check", update_info)
     def send_data_to_nester(self):
-         """Envoie les données collectées au serveur Nester."""
-         data = {
+        raw_scan_text = self.scan_results_text.get("1.0", tk.END).strip()  # Texte brut
+        latency_text = self.latency_text.cget("text").replace("Latency: ", "")  # Nettoyage
+    
+        data = {
             "ip_address": self.ip_label.cget("text"),
             "hostname": self.hostname_label.cget("text"),
-            "status": "En ligne",  # Exemple de statut
+            "status": "En ligne",
             "connected_devices": self.connected_devices_label.cget("text"),
-            "scan_results": self.scan_results_text.get(1.0, tk.END),
-            "wan_latency": self.latency_text.cget("text")
-            }   
-
-         result = self.nester_client.send_harvester_data(data)
-         messagebox.showinfo("Data Sent", result)
+            "scan_results": raw_scan_text,  # Plus de double JSON !
+            "wan_latency": latency_text     # Format simplifié
+        }
+        result = self.nester_client.send_harvester_data(data)
+        messagebox.showinfo("Data Sent", result)
 
 
 if __name__ == "__main__":

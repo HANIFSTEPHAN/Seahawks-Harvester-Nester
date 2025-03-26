@@ -8,4 +8,6 @@
 ## Installation
 1. Clonez le dépôt GitHub :
    ```bash
-   git clone https://github.com/HANIFSTEPHAN/APP-harvester.git
+   git clone https://github.com/HANIFSTEPHAN/Seahawks-Harvester-Nester.git
+
+   
