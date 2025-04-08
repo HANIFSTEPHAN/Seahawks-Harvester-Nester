@@ -19,16 +19,17 @@ jobs:
       with:
         python-version: '3.11.9'
 
-    - name: Installer Nmap
+    - name:  Installer Nmap
       run: |
         choco install nmap -y
+        $env:Path += ";C:\Program Files (x86)\Nmap"
 
     - name:  Installer les dépendances Python
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Lancer le Harvester
+    - name:  Lancer le Harvester
       run: |
+        $env:Path += ";C:\Program Files (x86)\Nmap"
         python main.py
-
