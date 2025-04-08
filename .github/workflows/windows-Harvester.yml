@@ -11,19 +11,24 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: 📥 Cloner le dépôt
+    - name:  Cloner le dépôt
       uses: actions/checkout@v3
 
-    - name: 🔧 Configurer Python
+    - name:  Configurer Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11.9'
 
-    - name: 📦 Installer les dépendances
+    - name: Installer Nmap
+      run: |
+        choco install nmap -y
+
+    - name:  Installer les dépendances Python
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: 🚀 Lancer le Harvester
+    - name: Lancer le Harvester
       run: |
         python main.py
+
