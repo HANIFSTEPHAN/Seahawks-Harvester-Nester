@@ -2,7 +2,7 @@ name: Build and Release
 
 on:
   push:
-    branches: [ "harvester" ]  # Surveillance de la branche harvester
+    branches: [ "harvester" ]
   pull_request:
     branches: [ "harvester" ]
 
@@ -11,13 +11,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]  # Build pour 3 OS
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.9"]
     
     steps:
     - uses: actions/checkout@v4
       with:
-        ref: harvester  # Checkout explicite de votre branche
+        ref: harvester
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -34,10 +34,10 @@ jobs:
       run: |
         pyinstaller --onefile --windowed main.py --name "SeahawksHarvester-${{ matrix.os }}"
         mkdir dist
-        cp dist/* dist/SeahawksHarvester-${{ matrix.os }} || true  # Compatibilité multi-OS
+        cp dist/* dist/SeahawksHarvester-${{ matrix.os }} || true
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: SeahawksHarvester-${{ matrix.os }}
         path: dist/
