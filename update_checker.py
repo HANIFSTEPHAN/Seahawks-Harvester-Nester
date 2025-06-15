@@ -1,32 +1,27 @@
 import requests
-import subprocess
-import os
-import sys
+import tkinter.messagebox as messagebox
+from packaging import version  # pip install packaging
 
 class UpdateChecker:
-    def __init__(self, current_version="1.1.0"):
+    def __init__(self, current_version="1.2.0"):  # ← Mettez votre version actuelle
         self.current_version = current_version
-        self.repo_url = "https://api.github.com/repos/HANIFSTEPHAN/APP-harvester/releases/latest"
-    
+        self.repo_api = "https://api.github.com/repos/HANIFSTEPHAN/Seahawks-Harvester-Nester/releases/latest"
+
     def check_for_updates(self):
         try:
-            response = requests.get(self.repo_url)
-            if response.status_code == 200:
-                latest_release = response.json()
-                latest_version = latest_release["tag_name"]
-                
-                if latest_version != self.current_version:
-                    return f"A new version ({latest_version}) is available!"
-                else:
-                    return "You are using the latest version."
-            else:
-                return "Unable to check for updates: Connection issue."
+            response = requests.get(self.repo_api)
+            latest = response.json()
+            latest_version = latest["tag_name"].lstrip("v")
+            
+            if version.parse(latest_version) > version.parse(self.current_version):
+                messagebox.showinfo(
+                    "Mise à jour disponible",
+                    f"Version {latest_version} disponible !\n\n"
+                    f"Téléchargez-la depuis :\n{latest['html_url']}",
+                    parent=self.parent_window  # Garde votre fenêtre comme parent
+                )
+                return True
+            return False
         except Exception as e:
-            return f"Unable to check for updates: {e}"
-
-    def update_application(self):
-        try:
-            subprocess.run(["git", "pull", "origin", "main"], check=True)
-            os.execv(sys.executable, ['python'] + sys.argv)
-        except Exception as e:
-            return f"Error during update: {e}"
+            messagebox.showerror("Erreur", f"Impossible de vérifier : {str(e)}")
+            return False

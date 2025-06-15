@@ -18,7 +18,7 @@ class SeahawksHarvesterApp(ctk.CTk):
         self.title("Seahawks Harvester - CyberScan Pro")
         self.geometry("1200x800")
         self.minsize(1000, 700)
-        self.version = "1.1.0"
+        self.version = "1.2.0"
 
         # Configuration des styles
         self._setup_styles()
@@ -28,7 +28,7 @@ class SeahawksHarvesterApp(ctk.CTk):
         self.network_scanner = NetworkScanner()
         self.wan_latency = WanLatency()
         self.update_checker = UpdateChecker(self.version)
-        self.nester_client = NesterClient("http://172.20.10.2:5000")  # URL du serveur Nester
+        self.nester_client = NesterClient("http://192.168.11.135:5000")  # URL du serveur Nester
 
         # Construction de l'interface
         self._build_ui()
