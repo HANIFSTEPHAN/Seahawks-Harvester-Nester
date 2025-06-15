@@ -1,43 +1,53 @@
-name: Build and Release
+name: Build Windows Release
 
 on:
   push:
     branches: [ "harvester" ]
+    tags:
+      - 'v*'  # Déclenche aussi sur les tags
   pull_request:
     branches: [ "harvester" ]
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.9"]
-    
+  build-windows:
+    runs-on: windows-latest  # Spécifique à Windows
+
     steps:
     - uses: actions/checkout@v4
       with:
-        ref: harvester
+        ref: harvester  # Branche cible
 
-    - name: Set up Python
+    - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
-    
+        python-version: "3.9"  # Version que vous utilisez
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pyinstaller
 
+    - name: Clean previous builds
+      run: |
+        Remove-Item -Recurse -Force dist, build -ErrorAction SilentlyContinue
+
     - name: Build executable
       run: |
-        pyinstaller --onefile --windowed main.py --name "SeahawksHarvester-${{ matrix.os }}"
-        mkdir dist
-        cp dist/* dist/SeahawksHarvester-${{ matrix.os }} || true
+        pyinstaller --onefile --windowed --name "SeahawksHarvester-Windows" main.py
+        if ($LASTEXITCODE -ne 0) { exit 1 }
 
-    - name: Upload artifact
+    - name: Rename output
+      run: |
+        Rename-Item -Path "dist\SeahawksHarvester-Windows.exe" -NewName "SeahawksHarvester.exe"
+
+    - name: Create release assets
+      run: |
+        mkdir release_assets
+        Compress-Archive -Path "dist\*" -DestinationPath "release_assets\SeahawksHarvester-Windows.zip"
+
+    - name: Upload release artifact
       uses: actions/upload-artifact@v4
       with:
-        name: SeahawksHarvester-${{ matrix.os }}
-        path: dist/
+        name: SeahawksHarvester-Windows
+        path: release_assets\SeahawksHarvester-Windows.zip
